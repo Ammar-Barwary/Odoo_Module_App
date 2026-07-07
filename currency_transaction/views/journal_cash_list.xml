@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- To get the cash journals -->
+    <record id="journal_cash_list_action" model="ir.actions.act_window">
+        <field name="name">Journal Cash List</field>
+        <field name="res_model">journal.cash.list</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face" >Create your first transaction</p>
+        </field>
+    </record>
+
+    <!-- Search Filtering -->
+    <record id="journal_cash_search_view" model="ir.ui.view">
+        <field name="name">journal.cash.list.view.search</field>
+        <field name="model">journal.cash.list</field>
+        <field name="arch" type="xml">
+            <search>
+                <!-- Filters -->
+                <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_posted" string="Posted" domain="[('state', '=', 'posted')]"/>
+                <separator/>
+                <filter name="filter_matching" string="Matching" domain="[('matching_number', '!=', False)]"/>
+                <filter name="filter_not_matching" string="Not Matching" domain="[('matching_number', '=', False)]"/>
+                
+                <!-- Groups -->
+                <filter name="group_journal" string="Journal" context="{'group_by': 'journal_id'}" />
+                <filter name="group_matching" string="Matching" context="{'group_by': 'matching_number'}" />
+            </search>
+        </field>
+    </record>
+
+    <!-- Transaction List View -->
+    <record id="journal_cash_list_view" model="ir.ui.view">
+        <field name="name">journal.cash.list.view</field>
+        <field name="model">journal.cash.list</field>
+        <field name="arch" type="xml">
+            <list>
+                <header>
+                    <button string="Reconcile" name="action_reconcile" type="object"/>
+                    <button string="Unreconcile" name="action_unreconcile" type="object"/>
+                </header>
+            
+                <field name="display_number" string="Number" decoration-info="state == 'draft'"/>
+                <field name="date" decoration-info="state == 'draft'"/>
+                <field name="memo_label" decoration-info="state == 'draft'"/>
+                <field name="journal_id" decoration-info="state == 'draft'"/>
+                <field name="amount" decoration-info="state == 'draft'" decoration-danger="amount &lt; 0" decoration-success="amount &gt; 0"/>
+                <field name="currency_id" optional="hide"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'posted'"/>
+                <field name="matching_number" string="Matching" widget="badge" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Transaction Form View -->
+    <record id="journal_cash_form_view" model="ir.ui.view">
+        <field name="name">journal.cash.list.view.form</field>
+        <field name="model">journal.cash.list</field>
+        <field name="arch" type="xml">
+            <form display_external_id="False">
+                <header>
+                    <button name="action_post" string="Confirm" type="object" class="oe_highlight" invisible="state != 'draft'" data-hotkey="q"/>
+                    <button name="action_draft" string="Reset to Draft" type="object" class="btn btn-secondary" invisible="state in ('draft')" data-hotkey="w"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                </header>
+                <sheet>
+                    <!-- Hidden Fields -->
+                    <field name="state" invisible="1"/>
+                    <field name="currency_id" invisible="1"></field>
+
+                    <div class="oe_button_box" name="button_box">
+                        <button name="open_reconciled_item" type="object" class="oe_stat_button" icon="oi-archive" invisible="not matching_number">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Reconciled Item</span>
+                            </div>
+                        </button>
+                    
+                        <button name="open_journal_entry" type="object" class="oe_stat_button" icon="fa-bars" invisible="not move_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Journal Entry</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <label for="name" string="Transaction Number"/>
+                        <h1>
+                            <field name="name" readonly="1" class="oe_inline"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="memo_label" readonly="state != 'draft'"></field>
+                            <field name="amount" readonly="state != 'draft'"></field>
+                        </group>
+                        <group>
+                            <field name="date" readonly="state != 'draft'"></field>
+                            <field name="journal_id" readonly="state != 'draft'"></field>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="o_attachment_preview"/>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+</odoo>

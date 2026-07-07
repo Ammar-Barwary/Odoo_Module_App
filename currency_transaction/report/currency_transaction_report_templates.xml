@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_journal_cash_list">
+        <t t-call="web.html_container">
+            <t t-foreach="reconciliation_pairs" t-as="pair">
+                <t t-call="currency_transaction.report_journal_cash_list_document"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_journal_cash_list_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <h2 style="border-bottom: 2px solid #333; padding-bottom: 8px; margin-bottom: 16px;">
+                    Cash Transaction Reconciliation
+                </h2>
+
+                <t t-if="pair['matching_number']">
+                    <p><strong>Matching Number:</strong> <span t-esc="pair['matching_number']"/></p>
+                </t>
+                <t t-if="not pair['matching_number']">
+                    <p>This transaction has not been reconciled.</p>
+                </t>
+
+                <!-- Two-column layout for side-by-side comparison -->
+                <t t-if="pair['side_a']">
+                    <table class="table table-bordered" style="margin-top: 12px; width: 100%;">
+                        <thead>
+                            <tr style="background-color: #f0f0f0;">
+                                <th style="width: 30%; padding: 6px 10px;">Detail</th>
+                                <th style="width: 35%;">
+                                    Transaction A
+                                    <t t-if="pair['side_a']['is_debit_side']"> (Debit)</t>
+                                    <t t-if="not pair['side_a']['is_debit_side']"> (Credit)</t>
+                                </th>
+                                <th t-if="pair['side_b']" style="width: 35%;">
+                                    Transaction B
+                                    <t t-if="pair['side_b']['is_debit_side']"> (Debit)</t>
+                                    <t t-if="not pair['side_b']['is_debit_side']"> (Credit)</t>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 6px 10px;"><strong>Number</strong></td>
+                                <td><span t-field="pair['side_a']['record'].display_number"/></td>
+                                <td t-if="pair['side_b']"><span t-field="pair['side_b']['record'].display_number"/></td>
+                                <td t-if="not pair['side_b']">—</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px 10px;"><strong>Date</strong></td>
+                                <td><span t-field="pair['side_a']['record'].date"/></td>
+                                <td t-if="pair['side_b']"><span t-field="pair['side_b']['record'].date"/></td>
+                                <td t-if="not pair['side_b']">—</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px 10px;"><strong>Label</strong></td>
+                                <td><span t-field="pair['side_a']['record'].memo_label"/></td>
+                                <td t-if="pair['side_b']"><span t-field="pair['side_b']['record'].memo_label"/></td>
+                                <td t-if="not pair['side_b']">—</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px 10px;"><strong>Cash Journal</strong></td>
+                                <td><span t-field="pair['side_a']['record'].journal_id.name"/></td>
+                                <td t-if="pair['side_b']"><span t-field="pair['side_b']['record'].journal_id.name"/></td>
+                                <td t-if="not pair['side_b']">—</td>
+                            </tr>
+                            <tr style="background-color: #fafafa;">
+                                <td style="padding: 6px 10px;"><strong>Original Amount</strong></td>
+                                <td>
+                                    <span t-esc="'{:,.2f}'.format(pair['side_a']['original_amount'])"/>
+                                    <t t-if="pair['side_a']['record'].currency_id">
+                                        <span t-esc="' ' + pair['side_a']['record'].currency_id.name"/>
+                                    </t>
+                                </td>
+                                <td t-if="pair['side_b']">
+                                    <span t-esc="'{:,.2f}'.format(pair['side_b']['original_amount'])"/>
+                                    <t t-if="pair['side_b']['record'].currency_id">
+                                        <span t-esc="' ' + pair['side_b']['record'].currency_id.name"/>
+                                    </t>
+                                </td>
+                                <td t-if="not pair['side_b']">—</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px 10px;"><strong>Amount in Company Currency</strong></td>
+                                <td>
+                                    <span t-esc="'{:,.2f}'.format(pair['side_a']['company_amount'])"/>
+                                    <span t-esc="' ' + company_currency.name"/>
+                                </td>
+                                <td t-if="pair['side_b']">
+                                    <span t-esc="'{:,.2f}'.format(pair['side_b']['company_amount'])"/>
+                                    <span t-esc="' ' + company_currency.name"/>
+                                </td>
+                                <td t-if="not pair['side_b']">—</td>
+                            </tr>
+                            <tr t-if="pair['side_a']['has_foreign_currency']">
+                                <td style="padding: 6px 10px;"><strong>Exchange Rate</strong></td>
+                                <td colspan="2">
+                                    <span t-esc="'1 ' + pair['side_a']['record'].currency_id.name + ' ='"/>
+                                    <span t-esc="'{:,.2f}'.format(pair['side_a']['exchange_rate']) if pair['side_a']['exchange_rate'] else 'N/A'"/>
+                                    <span t-esc="company_currency.name"/>
+                                </td>
+                            </tr>
+                            <tr t-if="pair['side_b'] and pair['side_b']['has_foreign_currency'] and not pair['side_a']['has_foreign_currency']">
+                                <td style="padding: 6px 10px;"><strong>Exchange Rate</strong></td>
+                                <td colspan="2">
+                                    <span t-esc="'1 ' + pair['side_b']['record'].currency_id.name + ' ='"/>
+                                    <span t-esc="'{:,.2f}'.format(pair['side_b']['exchange_rate']) if pair['side_b']['exchange_rate'] else 'N/A'"/>
+                                    <span t-esc="company_currency.name"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Gain / Loss Summary -->
+                    <t t-if="pair['gain_loss'] and pair['gain_loss']['type']">
+                        <div style="margin-top: 20px; border: 1px solid #ccc; padding: 12px; border-radius: 4px;">
+                            <h3 style="margin-top: 0;">Currency Exchange Summary</h3>
+                            <table class="table table-bordered" style="width: 100%;">
+                                <tr>
+                                    <td style="width: 30%; padding: 6px 10px;"><strong>Difference Amount</strong></td>
+                                    <td>
+                                        <span t-esc="'{:,.2f}'.format(pair['gain_loss']['amount'])"/>
+                                        <span t-esc="' ' + company_currency.name"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 6px 10px;"><strong>Type</strong></td>
+                                    <td>
+                                        <span t-if="pair['gain_loss']['type'] == 'gain'" style="color: green; font-weight: bold;">Gain</span>
+                                        <span t-if="pair['gain_loss']['type'] == 'loss'" style="color: red; font-weight: bold;">Loss</span>
+                                    </td>
+                                </tr>
+                                <tr t-if="pair['gain_loss']['rate'] and pair['gain_loss']['foreign_currency']">
+                                    <td style="padding: 6px 10px;"><strong>Exchange Rate Applied</strong></td>
+                                    <td>
+                                        <span t-esc="'1 ' + pair['gain_loss']['foreign_currency'] + ' ='"/>
+                                        <span t-esc="'{:,.2f}'.format(pair['gain_loss']['rate'])"/>
+                                        <span t-esc="company_currency.name"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
+                    <t t-if="pair['gain_loss'] and not pair['gain_loss']['type'] and pair['matching_number']">
+                        <div style="margin-top: 20px; border: 1px solid #ccc; padding: 12px; border-radius: 4px;">
+                            <p><strong>No currency difference</strong> — both amounts match in company currency.</p>
+                        </div>
+                    </t>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

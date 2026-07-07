@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Main Menu -->
+    <menuitem
+        id="currency_transaction_menu_root"
+        name="Currency Transaction"
+        action="journal_cash_list_action"
+        sequence="10"
+        web_icon="currency_transaction,static/description/icon.png"/>
+
+</odoo>

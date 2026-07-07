@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="mt_transaction_posted" model="mail.message.subtype">
+        <field name="name">Transaction Posted</field>
+        <field name="res_model">journal.cash.list</field>
+        <field name="default" eval="False"/>
+        <field name="description">Transaction confirmed and posted</field>
+        <field name="parent_id" ref="mail.mt_comment"/>
+    </record>
+
+    <record id="mt_transaction_draft" model="mail.message.subtype">
+        <field name="name">Transaction Reset to Draft</field>
+        <field name="res_model">journal.cash.list</field>
+        <field name="default" eval="False"/>
+        <field name="description">Transaction reset to draft</field>
+        <field name="parent_id" ref="mail.mt_comment"/>
+    </record>
+
+</odoo>

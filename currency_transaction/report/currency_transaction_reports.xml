@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_journal_cash_list" model="ir.actions.report">
+        <field name="name">Report Transaction</field>
+        <field name="model">journal.cash.list</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">currency_transaction.report_journal_cash_list</field>
+        <field name="binding_model_id" ref="model_journal_cash_list"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>
