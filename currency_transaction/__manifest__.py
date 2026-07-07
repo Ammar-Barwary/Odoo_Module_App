@@ -15,9 +15,7 @@
         "report/currency_transaction_reports.xml",
         "report/currency_transaction_report_templates.xml"
     ],
-    "images": [
-        "main_screenshot.jpg"
-    ],
+    "images": ["static/description/main_screenshot.jpg"],
     "depends": ["account", "mail"],
     "application": True,
     "installable": True,
