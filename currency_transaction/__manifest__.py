@@ -19,6 +19,4 @@
     "depends": ["account", "mail"],
     "application": True,
     "installable": True,
-    "currency": "USD",
-    "price": "30.00"
 }
