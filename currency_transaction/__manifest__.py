@@ -6,7 +6,7 @@
     "website": "",
     "category": "Accounting",
     "license": "LGPL-3",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "data": [
         "views/journal_cash_list.xml",
         "views/currency_transaction_menu.xml",
@@ -19,6 +19,9 @@
     "depends": ["account", "mail"],
     "application": True,
     "installable": True,
+<<<<<<< HEAD
     "currency": "USD",
     "price": "20.00"
+=======
+>>>>>>> main
 }
